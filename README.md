@@ -1,4 +1,6 @@
 # Banco de dados para vendas de produtos
+Trabalho em andamento...
+
 Banco de dados para venda de produtos com diversas operações:
 
 1 - Armazenar produto
