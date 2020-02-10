@@ -31,7 +31,7 @@ Muda o status do carrinho para finalizado.
 
 ## 8 - Visualizar carrinhos
 
-Visualiza as informações dos carrinhos como id, status, quantidade de produtos e total da compra.
+Visualiza os dados dos carrinhos como id, status, quantidade de produtos e total da compra.
 
 ![vw_carrinhos](https://github.com/rodriguesrenato61/vendas/blob/master/prints/vw_carrinhos.png)
 
