@@ -1,5 +1,5 @@
 # Banco de dados para vendas de produtos
-Confira o código fonte no arquivo mercado2.sql. Trabalho em andamento...
+Confira o código fonte no arquivo mercado2.sql.
 
 ![estrutura](https://github.com/rodriguesrenato61/vendas/blob/master/prints/estrutura.png)
 
