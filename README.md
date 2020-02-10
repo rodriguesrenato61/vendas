@@ -1,5 +1,5 @@
 # Banco de dados para vendas de produtos
-Confira o código fonte no arquivo mercado.sql. Trabalho em andamento...
+Confira o código fonte no arquivo mercado2.sql. Trabalho em andamento...
 
 Banco de dados para venda de produtos com diversas operações:
 
