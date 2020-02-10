@@ -15,6 +15,8 @@ Insere um novo produto no banco de dados com os atributos: codigo, nome, categor
 
 ## 4 - Visualizar dados dos produtos
 
+![vw_produtos](https://github.com/rodriguesrenato61/vendas/blob/master/prints/vw_produtos.png)
+
 ## 5 - Criar carrinho de compras
 
 Insere um novo carrinho no banco de dados com os atributos: id e status padrão como em andamento.
@@ -30,6 +32,8 @@ Muda o status do carrinho para finalizado.
 ## 8 - Visualizar carrinhos
 
 Visualiza as informações dos carrinhos como id, status, quantidade de produtos e total da compra.
+
+![vw_carrinhos](https://github.com/rodriguesrenato61/vendas/blob/master/prints/vw_carrinhos.png)
 
 ## 9 - Visualizar vendas
 Visualiza as informações das vendas como id, produto, categoria, preço de venda, preço de custo, unidades, total de custo, total de venda, lucro, data e hora.
