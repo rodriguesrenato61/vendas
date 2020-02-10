@@ -109,6 +109,29 @@ BEGIN
 	RETURN @valor_total;
 END $$
 
+/*Function status_venda:
+Mostra o status da venda de acordo com o status do carrinho*/
+CREATE FUNCTION status_venda(id_carrinho INTEGER)
+RETURNS VARCHAR(10)
+BEGIN
+
+    SET @carrinho_status = (SELECT status_carrinho FROM carrinhos WHERE id = id_carrinho);/*pega o status do carrinho*/
+
+    IF(@carrinho_status = "Em andamento")THEN/*se o status for em andamento*/
+
+        SET @retorno = "Não pago";
+
+    END IF;/*fim se o status for em andamento*/
+
+    IF(@carrinho_status = "Finalizado")THEN/*se o status for finalizado*/
+
+        SET @retorno = "Pago";
+
+    END IF;/*fim se o status for finalizado*/
+
+    RETURN @retorno;
+END $$
+
 /*Procedures*/
 
 /*Procedure insert_produto:
@@ -244,7 +267,7 @@ INNER JOIN categorias ON categoria_id = categorias.id;
 CREATE VIEW vw_carrinhos AS SELECT carrinhos.id AS id, count_produtos(carrinhos.id) AS produtos, status_carrinho, total(carrinhos.id) AS total_compra FROM carrinhos;
 
 /*vw_vendas*/
-CREATE VIEW vw_vendas AS SELECT vendas.id AS id, produto_nome AS produto, categoria_nome AS categoria, carrinho_id, pvenda, pcusto, unidades, (unidades * pcusto) AS total_custo, (unidades * pvenda) AS total_venda, ((unidades * pvenda) - (unidades * pcusto)) AS lucro, DATE(dt_criacao) AS data_venda, TIME(dt_criacao) AS hora FROM vendas;
+CREATE VIEW vw_vendas AS SELECT vendas.id AS id, produto_nome AS produto, categoria_nome AS categoria, carrinho_id, pvenda, pcusto, unidades, (unidades * pcusto) AS total_custo, (unidades * pvenda) AS total_venda, ((unidades * pvenda) - (unidades * pcusto)) AS lucro, DATE(dt_criacao) AS data_venda, TIME(dt_criacao) AS hora FROM vendas WHERE status_venda(carrinho_id) = "Pago";;
 
 
 /*inserindo dados básicos*/
