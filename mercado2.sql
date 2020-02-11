@@ -13,7 +13,7 @@ Muda o status do carrinho para finalizado.
 8 - Visualizar carrinhos:
 Visualiza as informações dos carrinhos como id, status, quantidade de produtos e total da compra.
 9 - Visualizar vendas:
-Visualiza as informações das vendas como id, produto, categoria, preço de venda, preço de custo, unidades, total de custo, total de venda, lucro, data e hora.
+Visualiza as informações das vendas como id, produto, categoria, preço de venda, preço de custo, unidades, total de custo, total de venda, lucro, status da venda, data e hora.
 10 - Calcular total de custo de todas as vendas.
 11 - Calcular total de vendas de totas as vendas.
 12 - Calcular total de lucro de todas as vendas.
@@ -267,8 +267,7 @@ INNER JOIN categorias ON categoria_id = categorias.id;
 CREATE VIEW vw_carrinhos AS SELECT carrinhos.id AS id, count_produtos(carrinhos.id) AS produtos, status_carrinho, total(carrinhos.id) AS total_compra FROM carrinhos;
 
 /*vw_vendas*/
-CREATE VIEW vw_vendas AS SELECT vendas.id AS id, produto_nome AS produto, categoria_nome AS categoria, carrinho_id, pvenda, pcusto, unidades, (unidades * pcusto) AS total_custo, (unidades * pvenda) AS total_venda, ((unidades * pvenda) - (unidades * pcusto)) AS lucro, DATE(dt_criacao) AS data_venda, TIME(dt_criacao) AS hora FROM vendas WHERE status_venda(carrinho_id) = "Pago";;
-
+CREATE VIEW vw_vendas AS SELECT vendas.id AS id, produto_nome AS produto, categoria_nome AS categoria, carrinho_id, pvenda, pcusto, unidades, (unidades * pcusto) AS total_custo, (unidades * pvenda) AS total_venda, ((unidades * pvenda) - (unidades * pcusto)) AS lucro, status_venda(carrinho_id) AS venda_status, DATE(dt_criacao) AS data_venda, TIME(dt_criacao) AS hora FROM vendas;
 
 /*inserindo dados básicos*/
 
@@ -310,14 +309,24 @@ CALL registrar_venda(1, 4, 4);
 CALL registrar_venda(1, 5, 3);
 CALL registrar_venda(1, 15, 5);
 CALL fechar_carrinho(1);
+CALL novo_carrinho();
+CALL registrar_venda(2, 10, 3);
+CALL registrar_venda(2, 3, 5);
+CALL registrar_venda(2, 1, 2);
+CALL registrar_venda(2, 18, 7);
+CALL registrar_venda(2, 15, 2);
+CALL registrar_venda(2, 10, 5);
 
 /*Retornando resultados*/
 
-/*Exibindo total de custo, total de vendas e lucro total*/
-SELECT SUM(total_custo) AS total_custo, SUM(total_venda) AS total_venda, SUM(lucro) AS total_lucro FROM vw_vendas;
+/*Exibindo total de custo, total de vendas e lucro total recebidos*/
+SELECT SUM(total_custo) AS total_custo, SUM(total_venda) AS total_venda, SUM(lucro) AS total_lucro FROM vw_vendas WHERE venda_status = "Pago";
+
+/*Exibindo total de custo, total de vendas e lucro total não recebidos*/
+SELECT SUM(total_custo) AS total_custo, SUM(total_venda) AS total_venda, SUM(lucro) AS total_lucro FROM vw_vendas WHERE venda_status = "Não pago";
 
 /*Filtrando pelas datas*/
-SELECT SUM(total_custo) AS total_custo, SUM(total_venda) AS total_venda, SUM(lucro) AS total_lucro FROM vw_vendas WHERE data_venda BETWEEN "2020-02-01" AND "2020-02-20";
+SELECT SUM(total_custo) AS total_custo, SUM(total_venda) AS total_venda, SUM(lucro) AS total_lucro FROM vw_vendas WHERE venda_status = "Pago" AND data_venda BETWEEN "2020-02-01" AND "2020-02-20";
 
 
 /*Testando procedures*/
