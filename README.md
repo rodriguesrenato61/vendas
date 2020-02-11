@@ -1,7 +1,7 @@
 # Banco de dados para vendas de produtos
 Confira o código fonte no arquivo mercado2.sql.
 
-![estrutura](https://github.com/rodriguesrenato61/vendas/blob/master/prints/estrutura.png)
+![estrutura](https://github.com/rodriguesrenato61/vendas/blob/master/prints/estrutura2.png)
 
 Banco de dados para venda de produtos com diversas operações:
 
@@ -65,24 +65,31 @@ CALL fechar_carrinho(2);
 Utiliza a view de carrinhos a vw_carrinhos para visualizar o id, status, quantidade de produtos e total da compra.
 ### SELECT * FROM vw_carrinhos;
 
-![vw_carrinhos](https://github.com/rodriguesrenato61/vendas/blob/master/prints/vw_carrinhos.png)
+![vw_carrinhos](https://github.com/rodriguesrenato61/vendas/blob/master/prints/vw_carrinhos2.png)
 
 ## 9 - Visualizar vendas
 
-Utiliza a view de vendas a vw_vendas para visualizar o id, produto, categoria, preço de venda, preço de custo, unidades, total de custo, total de venda, lucro, data e hora.
+Utiliza a view de vendas a vw_vendas para visualizar o id, produto, categoria, preço de venda, preço de custo, unidades, total de custo, total de venda, lucro, status da venda, data e hora.
 ### SELECT * FROM vw_vendas;
 
-![vw_vendas](https://github.com/rodriguesrenato61/vendas/blob/master/prints/vw_vendas.png)
+![vw_vendas](https://github.com/rodriguesrenato61/vendas/blob/master/prints/vw_vendas1.png)
 
-## 10 - Calcular total de custo, total de vendas e lucro de todas as vendas
+## 10 - Calcular total de custo, total de vendas e lucro recebidos de todas as vendas
 
-Utiliza a view de vendas para extrair as informações dos totais de venda.
-### SELECT SUM(total_custo) AS total_custo, SUM(total_venda) AS total_venda, SUM(lucro) AS total_lucro FROM vw_vendas;
+Utiliza a view de vendas para extrair as informações dos totais de venda recebidos.
+### SELECT SUM(total_custo) AS total_custo, SUM(total_venda) AS total_venda, SUM(lucro) AS total_lucro FROM vw_vendas WHERE venda_status = "Pago";
 
-![total vendas](https://github.com/rodriguesrenato61/vendas/blob/master/prints/total_vendas1.png)
+![total vendas](https://github.com/rodriguesrenato61/vendas/blob/master/prints/total_vendas_recebidos.png)
+
+## 11 - Calcular total de custo, total de vendas e lucro não recebidos de todas as vendas
+
+Utiliza a view de vendas para extrair as informações dos totais de venda não recebidos.
+### SELECT SUM(total_custo) AS total_custo, SUM(total_venda) AS total_venda, SUM(lucro) AS total_lucro FROM vw_vendas WHERE venda_status = "Pago";
+
+![total vendas](https://github.com/rodriguesrenato61/vendas/blob/master/prints/total_vendas_naorecebidos.png)
 
 Podemos também utilizar filtros nessa extração
 ### Filtrando pela data
-SELECT SUM(total_custo) AS total_custo, SUM(total_venda) AS total_venda, SUM(lucro) AS total_lucro FROM vw_vendas WHERE data_venda BETWEEN "2020-02-01" AND "2020-02-20";
+SELECT SUM(total_custo) AS total_custo, SUM(total_venda) AS total_venda, SUM(lucro) AS total_lucro FROM vw_vendas WHERE venda_status = "Pago" AND data_venda BETWEEN "2020-02-01" AND "2020-02-20";
 
 
