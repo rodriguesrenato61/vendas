@@ -65,7 +65,7 @@ CALL fechar_carrinho(2);
 Utiliza a view de carrinhos a vw_carrinhos para visualizar o id, status, quantidade de produtos e total da compra.
 ### SELECT * FROM vw_carrinhos;
 
-![vw_carrinhos](https://github.com/rodriguesrenato61/vendas/blob/master/prints/vw_carrinhos2.png)
+![vw_carrinhos](https://github.com/rodriguesrenato61/vendas/blob/master/prints/vw_carrinhos1.png)
 
 ## 9 - Visualizar vendas
 
@@ -84,7 +84,7 @@ Utiliza a view de vendas para extrair as informações dos totais de venda receb
 ## 11 - Calcular total de custo, total de vendas e lucro não recebidos de todas as vendas
 
 Utiliza a view de vendas para extrair as informações dos totais de venda não recebidos.
-### SELECT SUM(total_custo) AS total_custo, SUM(total_venda) AS total_venda, SUM(lucro) AS total_lucro FROM vw_vendas WHERE venda_status = "Pago";
+### SELECT SUM(total_custo) AS total_custo, SUM(total_venda) AS total_venda, SUM(lucro) AS total_lucro FROM vw_vendas WHERE venda_status = "Não pago";
 
 ![total vendas](https://github.com/rodriguesrenato61/vendas/blob/master/prints/total_vendas_naorecebidos.png)
 
