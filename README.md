@@ -1,6 +1,8 @@
 # Banco de dados MySQL para vendas de produtos
 Confira o código fonte no arquivo mercado2.sql.
 
+![diagrama er](https://github.com/rodriguesrenato61/vendas/blob/master/prints/diagrama-vendas.png)
+
 ![estrutura](https://github.com/rodriguesrenato61/vendas/blob/master/prints/estrutura2.png)
 
 Banco de dados para venda de produtos com diversas operações:
