@@ -30,8 +30,8 @@ USE mercado;
 /*Tabela categorias
 Armazena as categorias dos produtos*/
 CREATE TABLE categorias(
-	id INTEGER AUTO_INCREMENT,
-	nome VARCHAR(30),
+	id INTEGER NOT NULL AUTO_INCREMENT,
+	nome VARCHAR(30) NOT NULL,
 	PRIMARY KEY(id)
 );
 /*id: chave primária,
@@ -40,18 +40,18 @@ nome: nome da categoria*/
 /*Tabela produtos
 Armazena os dados dos produtos*/
 CREATE TABLE produtos(
-	codigo INTEGER AUTO_INCREMENT,
-	nome VARCHAR(50),
-	categoria_id INTEGER,
-	pcusto DOUBLE,
-	pvenda DOUBLE,
-	estoque INTEGER DEFAULT 0,
+	codigo INTEGER NOT NULL AUTO_INCREMENT,
+	nome VARCHAR(50) NOT NULL,
+	fk_categoria INTEGER NOT NULL,
+	pcusto DOUBLE NOT NULL,
+	pvenda DOUBLE NOT NULL,
+	estoque INTEGER DEFAULT 0 NOT NULL,
 	PRIMARY KEY(codigo),
-	FOREIGN KEY(categoria_id) REFERENCES categorias(id)
+	FOREIGN KEY(fk_categoria) REFERENCES categorias(id)
 );
 /*codigo: chave primária,
 nome: nome do produto,
-categoria_id: chave estrangeira para referenciar a categoria do produto,
+fk_categoria: chave estrangeira para referenciar a categoria do produto,
 pcusto: preço de custo,
 pvenda: preço de venda
 estoque: estoque do produto*/
@@ -59,7 +59,7 @@ estoque: estoque do produto*/
 /*Tabela carrinhos
 Armazena os carrinhos onde os produtos são colocados*/
 CREATE TABLE carrinhos(
-	id INTEGER AUTO_INCREMENT,
+	id INTEGER NOT NULL AUTO_INCREMENT,
 	status_carrinho VARCHAR(15),
 	PRIMARY KEY(id)
 );
@@ -69,20 +69,21 @@ status_carrinho: status do carrinho (em andamento ou finalizado)*/
 /*Tabela vendas
 Armazena os registros das vendas dos produtos*/
 CREATE TABLE vendas(
-	id INTEGER AUTO_INCREMENT,
-	produto_nome VARCHAR(50),
-	categoria_nome VARCHAR(30),
-	carrinho_id INTEGER,
-	pvenda DOUBLE,
-	pcusto DOUBLE,
-	unidades INTEGER,
-	dt_criacao DATETIME,
-	PRIMARY KEY(id)
+	id INTEGER NOT NULL AUTO_INCREMENT,
+	produto_nome VARCHAR(50) NOT NULL,
+	categoria_nome VARCHAR(30) NOT NULL,
+	fk_carrinho INTEGER NOT NULL,
+	pvenda DOUBLE NOT NULL,
+	pcusto DOUBLE NOT NULL,
+	unidades INTEGER NOT NULL,
+	dt_criacao DATETIME NOT NULL,
+	PRIMARY KEY(id),
+	FOREIGN KEY(fk_carrinho) REFERENCES carrinhos(id)
 );
 /*id: chave primária do registro,
 produto_nome: nome do produto,
 categoria_nome: categoria do produto,
-carrinho_id: carrinho ao qual o produto pertence,
+fk_carrinho: carrinho ao qual o produto pertence,
 pvenda: preço de venda do produto,
 pcusto: preço de custo do produto,
 unidades: quantidade vendida do produto,
@@ -96,7 +97,7 @@ DELIMITER $$
 Conta a quantidade de produtos de determinado carrinho*/
 CREATE FUNCTION count_produtos(id_carrinho INTEGER)
 RETURNS INTEGER
-RETURN (SELECT SUM(unidades) FROM vendas WHERE carrinho_id = id_carrinho);/*Contando a quantidade de produtos nesse carrinho*/
+RETURN (SELECT SUM(unidades) FROM vendas WHERE fk_carrinho = id_carrinho);/*Contando a quantidade de produtos nesse carrinho*/
 
 /*Function total:
 Calcula valor total ds produtos do carrinho*/
@@ -104,7 +105,7 @@ CREATE FUNCTION total(id_carrinho INTEGER)
 RETURNS DOUBLE
 BEGIN
 
-	SET @valor_total = (SELECT SUM(unidades * pvenda) FROM vendas WHERE carrinho_id = id_carrinho);/*calculando o valor total do carrinho*/
+	SET @valor_total = (SELECT SUM(unidades * pvenda) FROM vendas WHERE fk_carrinho = id_carrinho);/*calculando o valor total do carrinho*/
 
 	RETURN @valor_total;
 END $$
@@ -139,7 +140,7 @@ Cadastra um novo produto no banco de dados*/
 CREATE PROCEDURE insert_produto(nome_produto VARCHAR(50), id_categoria INTEGER, preco_custo DOUBLE, preco_venda DOUBLE, estoque_produto INTEGER)
 BEGIN
 
-	INSERT INTO produtos(nome, categoria_id, pvenda, pcusto, estoque)
+	INSERT INTO produtos(nome, fk_categoria, pvenda, pcusto, estoque)
 			VALUES(nome_produto, id_categoria, preco_venda, preco_custo, estoque_produto);/*cadastrando o produto*/
 
 END $$
@@ -149,7 +150,7 @@ Atualiza as informações de determinado produto*/
 CREATE PROCEDURE update_produto(cod_produto INTEGER, nome_produto VARCHAR(50), id_categoria INTEGER, preco_custo DOUBLE, preco_venda DOUBLE, estoque_produto INTEGER)
 BEGIN
 
-	UPDATE produtos SET nome = nome_produto, categoria_id = id_categoria, pvenda = preco_venda, pcusto = preco_custo, estoque = estoque_produto WHERE codigo = cod_produto;/*atualizando os dados do produto*/
+	UPDATE produtos SET nome = nome_produto, fk_categoria = id_categoria, pvenda = preco_venda, pcusto = preco_custo, estoque = estoque_produto WHERE codigo = cod_produto;/*atualizando os dados do produto*/
 
 END $$
 
@@ -170,7 +171,7 @@ BEGIN
 	INSERT INTO carrinhos(status_carrinho)
 		VALUES("Em andamento");
 		
-	SET @id_carrinho = (SELECT MAX(id) FROM carrinhos);
+	SET @id_carrinho = LAST_INSERT_ID();
 	
 	SELECT CONCAT("Id do carrinho: ", @id_carrinho) AS MSG;
 
@@ -213,7 +214,7 @@ BEGIN
 	
 		SET @nome_produto = (SELECT nome FROM produtos WHERE codigo = cod_produto);/*pega o nome do produto*/
 	
-		SET @venda_id = (SELECT id FROM vendas WHERE produto_nome = @nome_produto AND carrinho_id = id_carrinho);/*pega o id da venda em que esse produto está registrado nesse carrinho se houver*/
+		SET @venda_id = (SELECT id FROM vendas WHERE produto_nome = @nome_produto AND fk_carrinho = id_carrinho);/*pega o id da venda em que esse produto está registrado nesse carrinho se houver*/
 		
 		IF(@venda_id)THEN/*se esse produto já está no carrinho*/
 		
@@ -221,7 +222,7 @@ BEGIN
 		
 		ELSE/*se esse produto não está no carrinho*/
 		
-			SET @id_categoria = (SELECT categoria_id FROM produtos WHERE codigo = cod_produto);/*pegando o id da categoria do produto*/
+			SET @id_categoria = (SELECT fk_categoria FROM produtos WHERE codigo = cod_produto);/*pegando o id da categoria do produto*/
 		
 			SET @nome_categoria = (SELECT nome FROM categorias WHERE id = @id_categoria);/*pegando o nome da categoria*/
 		
@@ -229,7 +230,7 @@ BEGIN
 		
 			SET @pcusto = (SELECT pcusto FROM produtos WHERE codigo = cod_produto);/*pegando o preço de custo*/
 		
-			INSERT INTO vendas(produto_nome, categoria_nome, pvenda, pcusto, unidades, carrinho_id, dt_criacao)
+			INSERT INTO vendas(produto_nome, categoria_nome, pvenda, pcusto, unidades, fk_carrinho, dt_criacao)
 				VALUES(@nome_produto, @nome_categoria, @pvenda, @pcusto, quantidade, id_carrinho, NOW());/*registrando venda*/
 					
 		END IF;/*fim se esse produto já está no carrinho*/
@@ -260,14 +261,14 @@ DELIMITER ;
 /*Views*/
 
 /*vw_produtos*/
-CREATE VIEW vw_produtos AS SELECT codigo, produtos.nome AS produto, categoria_id, categorias.nome AS categoria, pcusto, pvenda, estoque FROM produtos
-INNER JOIN categorias ON categoria_id = categorias.id;
+CREATE VIEW vw_produtos AS SELECT codigo, produtos.nome AS produto, fk_categoria AS categoria_id, categorias.nome AS categoria, pcusto, pvenda, estoque FROM produtos
+INNER JOIN categorias ON fk_categoria = categorias.id;
 
 /*vw_carrinhos*/
 CREATE VIEW vw_carrinhos AS SELECT carrinhos.id AS id, count_produtos(carrinhos.id) AS produtos, status_carrinho, total(carrinhos.id) AS total_compra FROM carrinhos;
 
 /*vw_vendas*/
-CREATE VIEW vw_vendas AS SELECT vendas.id AS id, produto_nome AS produto, categoria_nome AS categoria, carrinho_id, pvenda, pcusto, unidades, (unidades * pcusto) AS total_custo, (unidades * pvenda) AS total_venda, ((unidades * pvenda) - (unidades * pcusto)) AS lucro, status_venda(carrinho_id) AS venda_status, DATE(dt_criacao) AS data_venda, TIME(dt_criacao) AS hora FROM vendas;
+CREATE VIEW vw_vendas AS SELECT vendas.id AS id, produto_nome AS produto, categoria_nome AS categoria, fk_carrinho AS carrinho_id, pvenda, pcusto, unidades, (unidades * pcusto) AS total_custo, (unidades * pvenda) AS total_venda, ((unidades * pvenda) - (unidades * pcusto)) AS lucro, status_venda(fk_carrinho) AS venda_status, DATE(dt_criacao) AS data_venda, TIME(dt_criacao) AS hora FROM vendas;
 
 /*inserindo dados básicos*/
 
